@@ -20,11 +20,12 @@ app.use((req, res, next) => {
 })
 
 app.use(((err, req, res, next) => {
-  res.status(err.status || 500)
-  res.send({
+  const status = err.status || 500
+
+  res.status(status).send({
     error: {
       message: err.message,
-      status: err.status,
+      status,
     },
   })
 
