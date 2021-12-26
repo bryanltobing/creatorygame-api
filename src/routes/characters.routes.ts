@@ -1,62 +1,50 @@
 import express from 'express'
+import ApiError from '../errors/ApiError'
 
 import CharacterModel from '../models/character.model'
 
 const router = express.Router()
 
-router.get('/', async (req, res) => {
-  try {
-    const characters = await CharacterModel.find()
-    res.send(characters)
-  } catch (err) {
-    console.error(err)
-    res.status(500).send('Internal server error')
-  }
+// Get All character
+router.get('/', async (req, res, next) => {
+  const characters = await CharacterModel.find()
+  res.send(characters || [])
 })
 
-router.get('/:slug', async (req, res) => {
-  const slug = req.params.slug
+// Get One Character
+router.get('/:slug', async (req, res, next) => {
+  const slug = req.body.slug
 
   if (!slug) {
-    throw new Error('Slug required')
+    return next(new ApiError(400, 'Slug required'))
   }
 
-  try {
-    const character = (await CharacterModel.findOne({ slug })) || {}
-    res.send(character)
-  } catch (err) {
-    console.error(err)
-    res.send('Internal server error')
+  const character = await CharacterModel.findOne({ slug })
+
+  if (!character) {
+    return next(new ApiError(404, 'Character not found'))
   }
+  res.send(character)
 })
 
 // Create Character
 router.post('/', async (req, res) => {
   const character = new CharacterModel(req.body)
 
-  try {
-    await character.save()
-    res.status(200).send('Character Created')
-  } catch (err) {
-    console.error(err)
-    res.status(500).send('Internal server error')
-  }
+  await character.save()
+  res.status(201).send('Character Created')
 })
 
-router.delete('/:slug', async (req, res) => {
+// Delete Character
+router.delete('/:slug', async (req, res, next) => {
   const slug = req.params.slug
 
   if (!slug) {
-    throw new Error('Slug required')
+    return next(new ApiError(400, 'Slug required'))
   }
 
-  try {
-    await CharacterModel.deleteOne({ slug })
-    res.status(200).send('Character Deleted')
-  } catch (err) {
-    console.error(err)
-    res.status(500).send('Internal server error')
-  }
+  await CharacterModel.deleteOne({ slug })
+  res.status(200).send('Character Deleted')
 })
 
 export default router
