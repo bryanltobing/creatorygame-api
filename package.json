@@ -4,7 +4,7 @@
   "description": "Creatory game api",
   "main": "index.js",
   "scripts": {
-    "start": "tsc --project ./ && nodemon ./build/src/index.js",
+    "start": "nodemon ./src/index.ts",
     "dev": "nodemon ./src/index.ts",
     "build": "tsc --project ./",
     "serve": "node ./build/src/index.js"

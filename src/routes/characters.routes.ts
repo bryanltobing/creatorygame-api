@@ -19,7 +19,7 @@ router.get(
 router.get(
   '/:slug',
   catchAsync(async (req, res, next) => {
-    const slug = req.body.slug
+    const slug = req.params.slug
 
     if (!slug) {
       return next(new ApiError(400, 'Slug required'))
