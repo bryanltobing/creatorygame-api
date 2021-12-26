@@ -10,26 +10,34 @@ const router = express.Router()
 router.get(
   '/',
   catchAsync(async (req, res, next) => {
-    const category = req.query.category
-    const query = req.query.query
+    const category = (req.query.category || '') as string
+    const query = (req.query.query || '') as string
 
-    if (category || query) {
+    if (!category && query) {
       const characters = await CharacterModel.find({
-        $or: [
-          {
-            categories: { $in: [category] },
-          },
-          {
-            name: query,
-          },
-          {
-            slug: query,
-          },
-        ],
+        $text: {
+          $search: query,
+        },
+      })
+
+      res.send(characters || [])
+    } else if (category && !query) {
+      const characters = await CharacterModel.find({
+        categories: { $in: [category] },
+      })
+
+      res.send(characters || [])
+    } else if (category && query) {
+      const characters = await CharacterModel.find({
+        categories: { $in: [category] },
+        $text: {
+          $search: query,
+        },
       })
       res.send(characters || [])
     } else {
       const characters = await CharacterModel.find()
+
       res.send(characters || [])
     }
   })

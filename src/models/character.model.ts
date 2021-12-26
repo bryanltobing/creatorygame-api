@@ -53,6 +53,8 @@ const characterSchema = new Schema<Character>(
   }
 )
 
+characterSchema.index({ name: 'text', slug: 'text' })
+
 // Hide unecessary mongoose return
 characterSchema.set('toJSON', {
   virtuals: true,
