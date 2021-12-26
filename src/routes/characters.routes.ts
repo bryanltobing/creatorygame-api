@@ -79,7 +79,13 @@ router.get(
 router.post(
   '/',
   catchAsync(async (req, res) => {
-    const character = new CharacterModel(req.body)
+    const character = new CharacterModel({
+      ...req.body,
+      categories: [
+        ...(req.body.categories as string[]).filter((cat) => cat !== 'all'),
+        'all',
+      ],
+    })
 
     await character.save()
     res.status(201).send('Character Created')
