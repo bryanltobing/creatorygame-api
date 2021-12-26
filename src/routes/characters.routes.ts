@@ -11,10 +11,21 @@ router.get(
   '/',
   catchAsync(async (req, res, next) => {
     const category = req.query.category
+    const query = req.query.query
 
-    if (category) {
+    if (category || query) {
       const characters = await CharacterModel.find({
-        categories: { $in: [category] },
+        $or: [
+          {
+            categories: { $in: [category] },
+          },
+          {
+            name: query,
+          },
+          {
+            slug: query,
+          },
+        ],
       })
       res.send(characters || [])
     } else {
