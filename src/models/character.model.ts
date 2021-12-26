@@ -7,6 +7,8 @@ interface Character {
   characterCode: 1 | 2
   power: number
   wealth: number
+  categories: string[]
+  pictureUrl: string
 }
 
 const { Schema } = mongoose
@@ -20,6 +22,7 @@ const characterSchema = new Schema<Character>(
     slug: {
       type: String,
       unique: true,
+      required: true,
     },
     characterCode: {
       type: Number,
@@ -38,6 +41,12 @@ const characterSchema = new Schema<Character>(
       min: 0,
       required: true,
     },
+    categories: [
+      { type: String, enum: ['all', 'moba', 'rpg', 'fps'], required: true },
+    ],
+    pictureUrl: {
+      type: String,
+    },
   },
   {
     timestamps: true,
@@ -54,7 +63,7 @@ characterSchema.set('toJSON', {
 })
 
 characterSchema.pre<Character>('save', function (next) {
-  this.slug = slugify(this.name, { lower: true })
+  this.slug = slugify(this.slug, { lower: true })
 
   next()
 })
