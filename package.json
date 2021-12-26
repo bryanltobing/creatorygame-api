@@ -4,9 +4,10 @@
   "description": "Creatory game api",
   "main": "index.js",
   "scripts": {
+    "start": "tsc --project ./ && nodemon ./build/src/index.js",
     "dev": "nodemon ./src/index.ts",
     "build": "tsc --project ./",
-    "serve": "node ./build/index.js"
+    "serve": "node ./build/src/index.js"
   },
   "keywords": [],
   "author": "Bryan Lumbantobing (https://bryantobing.com)",
