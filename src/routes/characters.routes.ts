@@ -3,6 +3,7 @@ import ApiError from '../errors/ApiError'
 
 import CharacterModel from '../models/character.model'
 import catchAsync from '../utils/catchAsync'
+import { escapeRegex } from '../utils/search'
 
 const router = express.Router()
 
@@ -11,13 +12,20 @@ router.get(
   '/',
   catchAsync(async (req, res, next) => {
     const category = (req.query.category || '') as string
-    const query = (req.query.query || '') as string
+    const queryParams = (req.query.query || '') as string
+
+    const query = new RegExp(escapeRegex(queryParams), 'gi')
 
     if (!category && query) {
       const characters = await CharacterModel.find({
-        $text: {
-          $search: query,
-        },
+        $or: [
+          {
+            name: query,
+          },
+          {
+            slug: query,
+          },
+        ],
       })
 
       res.send(characters || [])
@@ -30,9 +38,14 @@ router.get(
     } else if (category && query) {
       const characters = await CharacterModel.find({
         categories: { $in: [category] },
-        $text: {
-          $search: query,
-        },
+        $or: [
+          {
+            name: query,
+          },
+          {
+            slug: query,
+          },
+        ],
       })
       res.send(characters || [])
     } else {
