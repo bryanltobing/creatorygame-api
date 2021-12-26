@@ -39,6 +39,15 @@ const characterSchema = new Schema<Character>({
   },
 })
 
+// Hide unecessary mongoose return
+characterSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc, ret) {
+    delete ret._id
+  },
+})
+
 characterSchema.pre<Character>('save', function (next) {
   this.slug = slugify(this.name, { lower: true })
 
