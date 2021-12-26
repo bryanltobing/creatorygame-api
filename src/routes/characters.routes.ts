@@ -10,8 +10,17 @@ const router = express.Router()
 router.get(
   '/',
   catchAsync(async (req, res, next) => {
-    const characters = await CharacterModel.find()
-    res.send(characters || [])
+    const category = req.query.category
+
+    if (category) {
+      const characters = await CharacterModel.find({
+        categories: { $in: [category] },
+      })
+      res.send(characters || [])
+    } else {
+      const characters = await CharacterModel.find()
+      res.send(characters || [])
+    }
   })
 )
 
